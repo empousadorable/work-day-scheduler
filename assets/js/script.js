@@ -1,70 +1,53 @@
-var appointText = "";
-var appointTime = "";
-var currentDate;
-var currentTime;
-var currentContainer;
-var tempArray = [];
-var storedAppointments;
-var returnedAppointments;
+var hour9 = $("#9");
+var hour10 = $("#10");
+var hour11 = $("#11");
+var hour12 = $("#12");
+var hour1 = $("#13");
+var hour2 = $("#14");
+var hour3 = $("#15");
+var hour4 = $("#16");
+var hour5 = $("#17");
+var time = moment();
 
+function setPlanner() {
 
+    $("#currentDay").text(moment().format("dddd, MMMM Do YYYY"));
 
-$(window).on("load", function () {
-    currentDate = moment().format("dddd MMM Do YYYY, h:mm a");
-    $("#currentDay").append(currentDate);
-    currentTime = moment().format("H");
+    $(".time-block").each(function () {
+        var id = $(this).attr("id");
+        var schedule = localStorage.getItem(id);
 
-    function renderAppointments() {
-        storedAppointments = JSON.parse(localStorage.getItem("appointments"));
-        if (storedAppointments !== null) {
-            for (i = 0; i < storedAppointments.length; i++) {
-                returnedAppointments = storedAppointments[i];
-                details = returnedAppointments.details;
-                timeIndex = returnedAppointments.time;
-                timeIndex = timeIndex.replace(":00", '');
-                if (details !== null) {
-                    $("#" + timeIndex).children('div').children('div').children('textarea').val(details);
-                }
-            }
+        if (schedule !== null) {
+            $(this).children(".schedule").val(schedule);
         }
-    }
+    });
+}
 
-    renderAppointments();
+setPlanner();
+var saveBtn = $(".saveBtn");
 
-    for (i = 0; i <= 23; i++) {
-        CurrentContainer = i;
-        if (currentTime == i) {
-            $('#' + CurrentContainer).addClass("present");
-            $('#' + CurrentContainer).children('div').children('div').children("textarea").addClass("present");
+saveBtn.on("click", function () {
+    var time = $(this).parent().attr("id");
+    var schedule = $(this).siblings(".schedule").val();
+
+    localStorage.setItem(time, schedule);
+});
+
+function pastPresentFuture() {
+    hour = time.hours();
+    $(".time-block").each(function () {
+        var thisHour = parseInt($(this).attr("id"));
+
+        if (thisHour > hour) {
+            $(this).addClass("future")
         }
-        else if (currentTime > i) {
-            $('#' + CurrentContainer).addClass("past");
-            $('#' + CurrentContainer).children('div').children('div').children("textarea").addClass("past");
+        else if (thisHour === hour) {
+            $(this).addClass("present");
         }
         else {
-            $('#' + CurrentContainer).addClass("future");
-            $('#' + CurrentContainer).children('div').children('div').children("textarea").addClass("future");
+            $(this).addClass("past");
         }
-    }
-})
+    })
+}
 
-
-
-$(".saveBtn").click(function () {
-    appointText = $(this).parent('div').children('div').children('textarea').val();
-    appointTime = $(this).parent('div').parent().attr("id");
-    appointment = {
-        time: appointTime,
-        details: appointText
-    }
-    tempArray = JSON.parse(localStorage.getItem("appointments"));
-    if (tempArray === null) {
-        localStorage.setItem('appointments', JSON.stringify([{ time: appointTime, details: appointText }]));
-    }
-    else {
-        tempArray.push(appointment);
-        localStorage.setItem("appointments", JSON.stringify(tempArray));
-
-    }
-    $(this).parent('div').children('div').children('textarea').replaceWith($('<textarea>' + appointText.addClass("textarea") + '</textarea>'));
-})
+pastPresentFuture();
