@@ -9,6 +9,8 @@ var hour4 = $("#16");
 var hour5 = $("#17");
 var time = moment();
 
+// function to determine time of day
+
 function setPlanner() {
 
     $("#currentDay").text(moment().format("dddd, MMMM Do YYYY"));
@@ -23,6 +25,8 @@ function setPlanner() {
     });
 }
 
+//function to set up event saving locally
+
 setPlanner();
 var saveBtn = $(".saveBtn");
 
@@ -32,6 +36,8 @@ saveBtn.on("click", function () {
 
     localStorage.setItem(time, schedule);
 });
+
+// function to determine color-coding
 
 function pastPresentFuture() {
     hour = time.hours();
